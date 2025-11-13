@@ -1,0 +1,32 @@
+version: 2
+
+sources:
+  - name: usgs_water_raw
+    description: Raw USGS water level data ingested via dlt
+    schema: usgs_water_raw
+    tables:
+      - name: water_levels
+        description: Water level measurements from USGS gauges
+        columns:
+          - name: site_code
+            description: USGS site identification code
+          - name: site_name
+            description: Name of the measurement site
+          - name: latitude
+            description: Latitude of the gauge location
+          - name: longitude
+            description: Longitude of the gauge location
+          - name: parameter_code
+            description: USGS parameter code (e.g., 00065 for gage height)
+          - name: parameter_name
+            description: Readable name for the parameter
+          - name: timestamp
+            description: Timestamp of the measurement
+          - name: value
+            description: Measured value
+          - name: unit
+            description: Unit of measurement
+          - name: _dlt_load_id
+            description: dlt load batch identifier
+          - name: _dlt_id
+            description: dlt unique row identifier

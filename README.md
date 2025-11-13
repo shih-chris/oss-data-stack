@@ -4,15 +4,46 @@
 Provides an example of an Open Source Data Stack - primarily as a way to try out new tools and technologies! As a result, we'll likely run everything locally and iterate quickly.
 
 ## Architecture
-Overall data stack architecture
-- Data Lake: DuckLake (likely using DuckDB for catalog db)
-- Compute: DuckDB (or maybe Trino)
-- Ingestion: dlt
-- Transformation: SQLMesh
-- Orchestration: Prefect (or maybe Dagster)
-- Observability: Grafana
-- Data Viz: Grafana
-- AI & Agents: tbd
+Overall data stack architecture:
+- **Data Lake**: DuckLake (using DuckDB for catalog db)
+- **Compute**: DuckDB
+- **Ingestion**: dlt
+- **Transformation**: dbt-core
+- **Orchestration**: Dagster
+- **Package Manager**: uv
+- **Observability**: Grafana
+- **Data Viz**: Grafana
+- **AI & Agents**: tbd
+
+### Data Flow
+```
+USGS API → dlt → DuckDB (raw) → dbt → DuckDB (marts)
+            ↑                              ↑
+            └──── Dagster orchestrates ────┘
+```
+
+### Monorepo Structure
+```
+oss-data-stack/
+├── pipelines/              # dlt ingestion pipelines
+│   └── usgs/              # USGS Water Services pipeline
+├── transformations/        # dbt project
+│   ├── models/
+│   │   ├── staging/       # Raw data cleaning
+│   │   └── marts/         # Business logic
+│   └── dbt_project.yml
+├── orchestration/         # Dagster project
+│   ├── definitions.py     # Main Dagster definitions
+│   ├── assets/           # Data assets (dlt + dbt)
+│   ├── resources/        # Dagster resources
+│   └── schedules/        # Job schedules
+├── storage/              # Local data storage
+│   ├── lake/            # Raw data (dlt destination)
+│   ├── warehouse/       # Transformed data (dbt output)
+│   └── catalog.duckdb   # DuckDB database
+├── shared/              # Shared utilities
+└── config/              # Configuration files
+```
 
 # Example Use Case
 Over the past decade (or so) I've been really into whitewater kayaking - spending the majority of my free weekends itching to find a way to get on the water...some, including my partner, would call it an obsession.

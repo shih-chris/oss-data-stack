@@ -1,0 +1,10 @@
+# dlt configuration file
+
+[destination.duckdb]
+# DuckDB database path - relative to project root
+credentials = "storage/catalog.duckdb"
+
+[runtime]
+# Enable progress bar for data loading
+log_level = "INFO"
+progress = "enlighten"

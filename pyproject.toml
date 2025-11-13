@@ -1,0 +1,46 @@
+[project]
+name = "oss-data-stack"
+version = "0.1.0"
+description = "Example Open Source Data Stack for ingesting and analyzing water level data"
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "dlt[duckdb]>=0.5.0",
+    "dbt-core>=1.8.0",
+    "dbt-duckdb>=1.8.0",
+    "dagster>=1.8.0",
+    "dagster-dlt>=0.1.0",
+    "dagster-dbt>=0.24.0",
+    "dagster-webserver>=1.8.0",
+    "duckdb>=1.0.0",
+    "requests>=2.31.0",
+    "python-dotenv>=1.0.0",
+]
+
+[project.optional-dependencies]
+dev = [
+    "pytest>=8.0.0",
+    "pytest-cov>=4.1.0",
+    "ruff>=0.6.0",
+    "mypy>=1.11.0",
+]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.hatch.build.targets.wheel]
+packages = ["pipelines", "orchestration", "shared"]
+
+[tool.ruff]
+line-length = 100
+target-version = "py313"
+
+[tool.ruff.lint]
+select = ["E", "F", "I", "N", "W"]
+ignore = ["E501"]
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+python_files = ["test_*.py"]
+python_functions = ["test_*"]
