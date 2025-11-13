@@ -65,7 +65,9 @@ orchestration/tmpfiles/
 .env
 .env.local
 
-# Config with secrets
+# Config with secrets (allow example files and dlt config)
 config/**/*
 !config/**/.gitkeep
+!config/.env.example
 !config/dlt/
+!config/dlt/**

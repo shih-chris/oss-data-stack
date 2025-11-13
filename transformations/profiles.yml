@@ -5,12 +5,12 @@ oss_data_stack:
   outputs:
     dev:
       type: duckdb
-      path: ../storage/catalog.duckdb
+      path: "{{ env_var('DUCKDB_PATH', 'storage/catalog.duckdb') }}"
       schema: main
       threads: 4
 
     prod:
       type: duckdb
-      path: ../storage/catalog.duckdb
+      path: "{{ env_var('DUCKDB_PATH', 'storage/catalog.duckdb') }}"
       schema: main
       threads: 8
