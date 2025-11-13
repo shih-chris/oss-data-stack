@@ -1,0 +1,49 @@
+version: 2
+
+models:
+  - name: stg_usgs__water_levels
+    description: Staged water level measurements with cleaned column names
+    columns:
+      - name: dlt_id
+        description: Unique identifier for each measurement record
+        data_tests:
+          - unique
+          - not_null
+
+      - name: site_code
+        description: USGS site identification code
+        data_tests:
+          - not_null
+
+      - name: site_name
+        description: Name of the measurement site
+
+      - name: site_latitude
+        description: Latitude of the gauge location
+
+      - name: site_longitude
+        description: Longitude of the gauge location
+
+      - name: parameter_code
+        description: USGS parameter code (e.g., 00065 for gage height)
+        data_tests:
+          - not_null
+
+      - name: parameter_name
+        description: Readable name for the parameter (e.g., gage_height_ft)
+
+      - name: measurement_timestamp
+        description: Timestamp when the measurement was taken
+        data_tests:
+          - not_null
+
+      - name: measurement_value
+        description: Measured value
+        data_tests:
+          - not_null
+
+      - name: measurement_unit
+        description: Unit of measurement (e.g., ft for feet)
+
+      - name: dlt_load_id
+        description: dlt load batch identifier

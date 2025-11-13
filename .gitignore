@@ -1,0 +1,73 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Virtual environments
+venv/
+env/
+ENV/
+.venv
+
+# uv
+.uv/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Data storage (keep structure, not data)
+storage/*.duckdb
+storage/*.duckdb.wal
+storage/lake/*
+!storage/lake/.gitkeep
+storage/warehouse/*
+!storage/warehouse/.gitkeep
+
+# dlt
+.dlt/
+pipelines/**/schemas/*.yml
+pipelines/**/.dlt/
+
+# dbt
+transformations/target/
+transformations/dbt_packages/
+transformations/logs/
+
+# Dagster
+orchestration/tmpfiles/
+
+# Environment variables
+.env
+.env.local
+
+# Config with secrets (allow example files and dlt config)
+config/**/*
+!config/**/.gitkeep
+!config/.env.example
+!config/dlt/
+!config/dlt/**

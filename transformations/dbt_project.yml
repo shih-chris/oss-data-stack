@@ -1,0 +1,44 @@
+# dbt project configuration
+
+name: 'oss_data_stack'
+version: '0.1.0'
+config-version: 2
+
+# Project profile for connection configuration
+profile: 'oss_data_stack'
+
+# Source and target directories
+model-paths: ["models"]
+analysis-paths: ["analyses"]
+test-paths: ["tests"]
+seed-paths: ["seeds"]
+macro-paths: ["macros"]
+snapshot-paths: ["snapshots"]
+
+clean-targets:
+  - "target"
+  - "dbt_packages"
+  - "logs"
+
+# Model configurations
+models:
+  oss_data_stack:
+    # Staging models - create views for development speed
+    staging:
+      +materialized: view
+      +schema: staging
+
+    # Mart models - materialize as tables for performance
+    marts:
+      +materialized: table
+      +schema: marts
+
+# Seeds configuration
+seeds:
+  oss_data_stack:
+    +schema: seeds
+
+# Snapshots configuration
+snapshots:
+  oss_data_stack:
+    +target_schema: snapshots

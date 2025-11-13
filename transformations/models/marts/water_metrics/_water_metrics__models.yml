@@ -1,0 +1,50 @@
+version: 2
+
+models:
+  - name: fct_water_levels_daily
+    description: Daily aggregated water level facts by site and parameter
+    columns:
+      - name: site_code
+        description: USGS site identification code
+
+      - name: site_name
+        description: Name of the measurement site
+
+      - name: parameter_name
+        description: Type of measurement (e.g., gage_height_ft)
+
+      - name: measurement_date
+        description: Date of measurements (truncated to day)
+
+      - name: min_value
+        description: Minimum value recorded during the day
+
+      - name: max_value
+        description: Maximum value recorded during the day
+
+      - name: avg_value
+        description: Average value for the day
+
+      - name: measurement_count
+        description: Number of measurements taken during the day
+
+      - name: first_value
+        description: First measurement value of the day
+
+      - name: last_value
+        description: Last measurement value of the day
+
+      - name: measurement_unit
+        description: Unit of measurement
+
+      - name: site_latitude
+        description: Latitude of the gauge location
+
+      - name: site_longitude
+        description: Longitude of the gauge location
+
+      - name: first_measurement_time
+        description: Timestamp of first measurement
+
+      - name: last_measurement_time
+        description: Timestamp of last measurement
