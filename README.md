@@ -37,10 +37,6 @@ oss-data-stack/
 │   ├── assets/           # Data assets (dlt + dbt)
 │   ├── resources/        # Dagster resources
 │   └── schedules/        # Job schedules
-├── storage/              # Local data storage
-│   ├── lake/            # Raw data (dlt destination)
-│   ├── warehouse/       # Transformed data (dbt output)
-│   └── catalog.duckdb   # DuckDB database
 ├── shared/              # Shared utilities
 └── config/              # Configuration files
 ```

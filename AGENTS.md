@@ -83,13 +83,6 @@ oss-data-stack/
 │   │
 │   └── jobs/                   # Dagster jobs (optional)
 │
-├── storage/                    # Local data storage
-│   ├── lake/                   # DuckLake/raw data storage (dlt destination)
-│   │   └── .gitkeep
-│   ├── warehouse/              # Transformed data (dbt output)
-│   │   └── .gitkeep
-│   └── catalog.duckdb          # DuckDB database file
-│
 ├── shared/                     # Shared utilities across layers
 │   ├── __init__.py
 │   ├── config.py              # Global configuration
