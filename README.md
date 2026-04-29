@@ -62,9 +62,64 @@ Dagster orchestrates the same dlt ingestion and dbt transformation flow. Keep `s
 1. Start the Dagster UI and daemon with `DAGSTER_HOME=$PWD/storage/dagster_home uv run dagster dev`.
 2. Open the Dagster UI shown in the command output.
 3. Materialize the `usgs_pipeline_job` asset job to run `USGS API → dlt → DuckLake raw schemas → dbt build → DuckLake marts`.
-4. Enable the `daily_usgs_schedule` schedule to run the same job daily at 06:00 UTC.
+4. Enable the `daily_usgs_schedule` schedule to run the same job every 15 minutes.
 
 The local Dagster instance stores run metadata and logs under `storage/dagster_home/`. Generated runtime state is ignored by git; only the local `dagster.yaml` is committed.
+
+### Deploy Dagster to Cloud Run
+
+Phase 2 deploys Dagster as two Cloud Run services backed by the existing Cloud SQL instance:
+- `dagster-webserver` serves the Dagster UI and GraphQL API.
+- `dagster-daemon` runs schedules and sensors with exactly one always-on instance.
+- Dagster run/event/schedule metadata is stored in a separate `dagster` database in Cloud SQL.
+- Cloud Run uses its runtime service account for GCS access; the local service account key remains only for local development.
+- Container logs are tee'd to a shared volume and shipped to Grafana Cloud Loki by a Grafana Alloy sidecar.
+
+Provision the Cloud Run-specific infrastructure after the base DuckLake setup is complete:
+
+```bash
+export GCP_PROJECT_ID=your-gcp-project-id
+export LOKI_URL=https://logs-prod-000.grafana.net/loki/api/v1/push
+export LOKI_USER=your-grafana-cloud-logs-user
+export LOKI_API_KEY=your-grafana-cloud-api-key
+bash scripts/setup_dagster_gcp.sh
+```
+
+If you want GitHub Actions deployment, also set `GITHUB_REPOSITORY=owner/repo` before running `scripts/setup_dagster_gcp.sh`; the script prints the repository variables needed by `.github/workflows/deploy-dagster.yml`.
+
+Build and deploy manually with:
+
+```bash
+bash scripts/deploy_dagster.sh
+```
+
+### Redeploy Dagster
+
+Use the same deploy script whenever application code, dbt models, Dagster definitions, schedules, or Cloud Run settings change:
+
+```bash
+bash scripts/deploy_dagster.sh
+```
+
+By default, the image tag is the current git commit short SHA. If you are redeploying uncommitted local changes, set a unique tag so Cloud Run pulls a fresh image:
+
+```bash
+IMAGE_TAG="dev-$(date -u +%Y%m%d%H%M%S)" bash scripts/deploy_dagster.sh
+```
+
+If the image is already pushed and you only need to reapply Cloud Run service configuration, skip the Docker build/push step:
+
+```bash
+SKIP_BUILD=1 bash scripts/deploy_dagster.sh
+```
+
+After redeploying, confirm both services are ready:
+
+```bash
+gcloud run services list --project "$GCP_PROJECT_ID" --region "${GCP_REGION:-us-central1}"
+```
+
+Set `DAGSTER_WEBSERVER_ALLOW_UNAUTHENTICATED=1` before deployment only if you want the Dagster UI publicly invokable. Otherwise grant `roles/run.invoker` to specific users or a Google Workspace domain and use `gcloud run services proxy` for authenticated local access.
 
 ### Monorepo Structure
 ```
@@ -82,8 +137,11 @@ oss-data-stack/
 │   ├── resources/        # Dagster resources
 │   ├── jobs/             # Asset jobs
 │   └── schedules/        # Job schedules
+├── config/
+│   ├── alloy/            # Grafana Alloy log shipping config
+│   └── dlt/              # dlt runtime config
 ├── shared/              # Shared utilities
-└── config/              # Configuration files
+└── scripts/             # Local, GCP setup, and deploy helpers
 ```
 
 # Example Use Case
