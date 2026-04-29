@@ -3,7 +3,7 @@
 import json
 import os
 from pathlib import Path
-from urllib.parse import quote
+from urllib.parse import quote, urlencode
 
 from dotenv import load_dotenv
 
@@ -68,6 +68,13 @@ def get_ducklake_catalog_uri() -> str:
 
     user = quote(DUCKLAKE_PG_USER, safe="")
     password = quote(DUCKLAKE_PG_PASSWORD, safe="")
+    if DUCKLAKE_PG_HOST.startswith("/"):
+        params = urlencode(
+            {"host": DUCKLAKE_PG_HOST, "port": DUCKLAKE_PG_PORT},
+            quote_via=quote,
+        )
+        return f"postgresql://{user}:{password}@/{DUCKLAKE_PG_DATABASE}?{params}"
+
     return (
         f"postgresql://{user}:{password}"
         f"@{DUCKLAKE_PG_HOST}:{DUCKLAKE_PG_PORT}/{DUCKLAKE_PG_DATABASE}"
@@ -92,6 +99,16 @@ def get_ducklake_storage_config():
                 private_key_id=key_info.get("private_key_id"),
                 client_email=key_info.get("client_email"),
             )
+
+    if credentials is None:
+        try:
+            from google.auth import default as google_auth_default
+
+            adc_credentials, project_id = google_auth_default()
+            credentials = GcpServiceAccountCredentials(project_id=project_id)
+            credentials.parse_native_representation(adc_credentials)
+        except Exception:
+            credentials = None
 
     return FilesystemConfiguration(bucket_url=DUCKLAKE_GCS_PATH, credentials=credentials)
 

@@ -1,6 +1,6 @@
 """Dagster definitions for the OSS data stack."""
 
-from dagster import Definitions
+from dagster import Definitions, in_process_executor
 
 from orchestration.assets import assets
 from orchestration.jobs import jobs
@@ -12,4 +12,5 @@ defs = Definitions(
     jobs=jobs,
     resources=resources,
     schedules=schedules,
+    executor=in_process_executor,
 )

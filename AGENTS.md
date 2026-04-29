@@ -95,10 +95,13 @@ oss-data-stack/
 │
 ├── scripts/                   # Development/ops scripts
 │   ├── setup_gcp.sh          # GCP DuckLake infrastructure setup
+│   ├── setup_dagster_gcp.sh  # GCP Dagster Cloud Run infrastructure setup
+│   ├── deploy_dagster.sh     # Build/push/deploy Dagster Cloud Run services
 │   ├── start_cloud_sql_proxy.sh
 │   └── init_ducklake.py      # DuckLake catalog initialization
 │
 └── config/                   # Configuration files
+    ├── alloy/              # Grafana Alloy config for Loki log shipping
     ├── dlt/                 # dlt configs
     │   └── config.toml
     └── .env                 # Environment variables (gitignored)
@@ -111,6 +114,8 @@ oss-data-stack/
 - Run the USGS dlt pipeline directly: `uv run python pipelines/usgs/pipeline.py`
 - Run dbt transformations and tests directly: `uv run dbt build --project-dir transformations --profiles-dir transformations`
 - Run Dagster locally: `DAGSTER_HOME=$PWD/storage/dagster_home uv run dagster dev`
+- Provision Dagster Cloud Run infrastructure: `bash scripts/setup_dagster_gcp.sh`
+- Build and deploy Dagster to Cloud Run: `bash scripts/deploy_dagster.sh`
 
 DuckLake workloads require `scripts/start_cloud_sql_proxy.sh` running locally before dlt, dbt, Dagster materializations, or ad-hoc DuckDB queries.
 
