@@ -5,14 +5,14 @@ description = "Example Open Source Data Stack for ingesting and analyzing water 
 readme = "README.md"
 requires-python = ">=3.13"
 dependencies = [
-    "dlt[duckdb]>=0.5.0",
+    "dlt[ducklake,gs]>=1.26.0",
     "dbt-core>=1.8.0",
-    "dbt-duckdb>=1.8.0",
+    "dbt-duckdb>=1.9.6",
     "dagster>=1.8.0",
     "dagster-dlt>=0.1.0",
     "dagster-dbt>=0.24.0",
     "dagster-webserver>=1.8.0",
-    "duckdb>=1.0.0",
+    "duckdb>=1.5.2",
     "requests>=2.31.0",
     "python-dotenv>=1.0.0",
 ]

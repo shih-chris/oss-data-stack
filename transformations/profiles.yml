@@ -5,12 +5,72 @@ oss_data_stack:
   outputs:
     dev:
       type: duckdb
-      path: "{{ env_var('DUCKDB_PATH', 'storage/catalog.duckdb') }}"
+      path: ":memory:"
+      database: "{{ env_var('DUCKLAKE_CATALOG_NAME', 'ducklake') }}"
       schema: main
       threads: 4
+      extensions:
+        - httpfs
+        - postgres
+        - ducklake
+      secrets:
+        - name: "{{ env_var('DUCKLAKE_GCS_SECRET_NAME', 'ducklake_gcs') }}"
+          type: gcs
+          key_id: "{{ env_var('DUCKLAKE_GCS_HMAC_KEY_ID') }}"
+          secret: "{{ env_var('DUCKLAKE_GCS_HMAC_SECRET') }}"
+          scope: "{{ env_var('DUCKLAKE_GCS_PATH') }}"
+        - name: "{{ env_var('DUCKLAKE_POSTGRES_SECRET_NAME', 'ducklake_postgres') }}"
+          type: postgres
+          host: "{{ env_var('DUCKLAKE_PG_HOST', '127.0.0.1') }}"
+          port: "{{ env_var('DUCKLAKE_PG_PORT', '5432') }}"
+          database: "{{ env_var('DUCKLAKE_PG_DATABASE', 'ducklake_catalog') }}"
+          user: "{{ env_var('DUCKLAKE_PG_USER', 'postgres') }}"
+          password: "{{ env_var('DUCKLAKE_PG_PASSWORD') }}"
+        - name: "{{ env_var('DUCKLAKE_SECRET_NAME', 'ducklake_secret') }}"
+          type: ducklake
+          metadata_path: ""
+          data_path: "{{ env_var('DUCKLAKE_GCS_PATH') }}"
+          metadata_schema: "{{ env_var('DUCKLAKE_METADATA_SCHEMA', 'ducklake') }}"
+          metadata_parameters:
+            TYPE: postgres
+            SECRET: "{{ env_var('DUCKLAKE_POSTGRES_SECRET_NAME', 'ducklake_postgres') }}"
+      attach:
+        - path: "ducklake:{{ env_var('DUCKLAKE_SECRET_NAME', 'ducklake_secret') }}"
+          alias: "{{ env_var('DUCKLAKE_CATALOG_NAME', 'ducklake') }}"
+          is_ducklake: true
 
     prod:
       type: duckdb
-      path: "{{ env_var('DUCKDB_PATH', 'storage/catalog.duckdb') }}"
+      path: ":memory:"
+      database: "{{ env_var('DUCKLAKE_CATALOG_NAME', 'ducklake') }}"
       schema: main
       threads: 8
+      extensions:
+        - httpfs
+        - postgres
+        - ducklake
+      secrets:
+        - name: "{{ env_var('DUCKLAKE_GCS_SECRET_NAME', 'ducklake_gcs') }}"
+          type: gcs
+          key_id: "{{ env_var('DUCKLAKE_GCS_HMAC_KEY_ID') }}"
+          secret: "{{ env_var('DUCKLAKE_GCS_HMAC_SECRET') }}"
+          scope: "{{ env_var('DUCKLAKE_GCS_PATH') }}"
+        - name: "{{ env_var('DUCKLAKE_POSTGRES_SECRET_NAME', 'ducklake_postgres') }}"
+          type: postgres
+          host: "{{ env_var('DUCKLAKE_PG_HOST', '127.0.0.1') }}"
+          port: "{{ env_var('DUCKLAKE_PG_PORT', '5432') }}"
+          database: "{{ env_var('DUCKLAKE_PG_DATABASE', 'ducklake_catalog') }}"
+          user: "{{ env_var('DUCKLAKE_PG_USER', 'postgres') }}"
+          password: "{{ env_var('DUCKLAKE_PG_PASSWORD') }}"
+        - name: "{{ env_var('DUCKLAKE_SECRET_NAME', 'ducklake_secret') }}"
+          type: ducklake
+          metadata_path: ""
+          data_path: "{{ env_var('DUCKLAKE_GCS_PATH') }}"
+          metadata_schema: "{{ env_var('DUCKLAKE_METADATA_SCHEMA', 'ducklake') }}"
+          metadata_parameters:
+            TYPE: postgres
+            SECRET: "{{ env_var('DUCKLAKE_POSTGRES_SECRET_NAME', 'ducklake_postgres') }}"
+      attach:
+        - path: "ducklake:{{ env_var('DUCKLAKE_SECRET_NAME', 'ducklake_secret') }}"
+          alias: "{{ env_var('DUCKLAKE_CATALOG_NAME', 'ducklake') }}"
+          is_ducklake: true

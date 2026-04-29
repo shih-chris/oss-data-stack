@@ -3,6 +3,7 @@ version: 2
 sources:
   - name: usgs_water_raw
     description: Raw USGS water level data ingested via dlt
+    database: "{{ env_var('DUCKLAKE_CATALOG_NAME', 'ducklake') }}"
     schema: usgs_water_raw
     tables:
       - name: water_levels

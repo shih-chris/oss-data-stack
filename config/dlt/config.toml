@@ -1,8 +1,5 @@
-# dlt configuration file
-
-[destination.duckdb]
-# DuckDB database path - relative to project root
-credentials = "storage/catalog.duckdb"
+# dlt configuration file for the native DuckLake destination.
+# Catalog/storage credentials are provided from environment variables in code.
 
 [runtime]
 # Enable progress bar for data loading
