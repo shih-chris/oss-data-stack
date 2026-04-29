@@ -40,13 +40,10 @@ ENV/
 .DS_Store
 Thumbs.db
 
-# Data storage (keep structure, not data)
+# Local data/runtime state
+storage/
 storage/*.duckdb
 storage/*.duckdb.wal
-storage/lake/*
-!storage/lake/.gitkeep
-storage/warehouse/*
-!storage/warehouse/.gitkeep
 
 # dlt
 .dlt/
@@ -63,6 +60,7 @@ orchestration/tmpfiles/
 
 # Environment variables
 .env
+.env.*
 .env.local
 
 # Config with secrets (allow example files and dlt config)

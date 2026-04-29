@@ -8,11 +8,11 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))
 
-from pipelines.usgs.pipeline import run_usgs_pipeline
-from shared.database import get_duckdb_connection
+from pipelines.usgs.pipeline import run_usgs_pipeline  # noqa: E402
+from shared.database import get_ducklake_connection  # noqa: E402
 
 
-def test_dlt_ingestion():
+def run_dlt_ingestion():
     """Test dlt pipeline ingestion."""
     print("=" * 80)
     print("Testing dlt ingestion...")
@@ -23,7 +23,7 @@ def test_dlt_ingestion():
     return True
 
 
-def test_dbt_transformations():
+def run_dbt_transformations():
     """Test dbt transformations."""
     print("\n" + "=" * 80)
     print("Testing dbt transformations...")
@@ -39,7 +39,7 @@ def test_dbt_transformations():
     )
 
     if result.returncode != 0:
-        print(f"✗ dbt run failed:")
+        print("✗ dbt run failed:")
         print(f"STDOUT:\n{result.stdout}")
         print(f"STDERR:\n{result.stderr}")
         return False
@@ -48,13 +48,13 @@ def test_dbt_transformations():
     return True
 
 
-def test_data_quality():
+def run_data_quality():
     """Test data quality and query results."""
     print("\n" + "=" * 80)
     print("Testing data quality...")
     print("=" * 80)
 
-    conn = get_duckdb_connection()
+    conn = get_ducklake_connection()
 
     # Test raw data
     raw_count = conn.execute(
@@ -89,7 +89,7 @@ def test_data_quality():
 
     if latest:
         site, date, value, unit, count = latest
-        print(f"\n📊 Latest Reading:")
+        print("\n📊 Latest Reading:")
         print(f"   Site: {site}")
         print(f"   Date: {date}")
         print(f"   Avg Level: {value} {unit}")
@@ -103,9 +103,9 @@ def main():
     print("\n🚀 Starting end-to-end pipeline test...\n")
 
     tests = [
-        ("dlt ingestion", test_dlt_ingestion),
-        ("dbt transformations", test_dbt_transformations),
-        ("data quality", test_data_quality),
+        ("dlt ingestion", run_dlt_ingestion),
+        ("dbt transformations", run_dbt_transformations),
+        ("data quality", run_data_quality),
     ]
 
     results = []
