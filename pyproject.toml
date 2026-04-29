@@ -44,3 +44,7 @@ ignore = ["E501"]
 testpaths = ["tests"]
 python_files = ["test_*.py"]
 python_functions = ["test_*"]
+
+[tool.dagster]
+module_name = "orchestration.definitions"
+code_location_name = "oss_data_stack"

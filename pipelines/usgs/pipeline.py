@@ -13,6 +13,9 @@ from shared.config import (
     require_ducklake_config,
 )
 
+USGS_PIPELINE_NAME = "usgs_water_services"
+USGS_DATASET_NAME = "usgs_water_raw"
+
 
 def _ducklake_destination():
     require_ducklake_config(require_hmac=False)
@@ -33,11 +36,29 @@ def _ducklake_destination():
     return dlt.destinations.ducklake(credentials=DuckLakeCredentials(**credentials_kwargs))
 
 
+def build_usgs_pipeline(
+    destination: str = "ducklake",
+    dataset_name: str = USGS_DATASET_NAME,
+    configure_destination: bool = True,
+) -> dlt.Pipeline:
+    """Build the USGS dlt pipeline without running it."""
+    if destination != "ducklake":
+        raise ValueError("This project is configured for the DuckLake destination only.")
+
+    dlt_destination = _ducklake_destination() if configure_destination else destination
+
+    return dlt.pipeline(
+        pipeline_name=USGS_PIPELINE_NAME,
+        destination=dlt_destination,
+        dataset_name=dataset_name,
+    )
+
+
 def run_usgs_pipeline(
     site_codes: list[str] = None,
     parameter_codes: list[str] = None,
     destination: str = "ducklake",
-    dataset_name: str = "usgs_water_raw",
+    dataset_name: str = USGS_DATASET_NAME,
 ) -> dlt.Pipeline:
     """
     Run the USGS water data ingestion pipeline.
@@ -57,15 +78,7 @@ def run_usgs_pipeline(
         parameter_codes=parameter_codes,
     )
 
-    if destination != "ducklake":
-        raise ValueError("This project is configured for the DuckLake destination only.")
-
-    # Create dlt pipeline backed by DuckLake metadata in Cloud SQL and files in GCS.
-    pipeline = dlt.pipeline(
-        pipeline_name="usgs_water_services",
-        destination=_ducklake_destination(),
-        dataset_name=dataset_name,
-    )
+    pipeline = build_usgs_pipeline(destination=destination, dataset_name=dataset_name)
 
     # Run the pipeline
     load_info = pipeline.run(usgs_water_data(config=config))

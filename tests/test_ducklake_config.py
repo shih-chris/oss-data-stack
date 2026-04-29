@@ -10,7 +10,7 @@ def _reload_config():
 
 
 def test_ducklake_gcs_path_defaults_from_bucket_and_prefix(monkeypatch):
-    monkeypatch.delenv("DUCKLAKE_GCS_PATH", raising=False)
+    monkeypatch.setenv("DUCKLAKE_GCS_PATH", "")
     monkeypatch.setenv("DUCKLAKE_GCS_BUCKET", "example-bucket")
     monkeypatch.setenv("DUCKLAKE_GCS_PREFIX", "lake/prefix")
 

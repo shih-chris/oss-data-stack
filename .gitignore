@@ -41,7 +41,10 @@ ENV/
 Thumbs.db
 
 # Local data/runtime state
-storage/
+storage/*
+!storage/dagster_home/
+storage/dagster_home/*
+!storage/dagster_home/dagster.yaml
 storage/*.duckdb
 storage/*.duckdb.wal
 

@@ -37,7 +37,18 @@ This project uses DuckLake as the persistent storage layer. DuckDB still execute
 3. Run `scripts/start_cloud_sql_proxy.sh` in a separate terminal before workloads that access DuckLake.
 4. Run `uv run python scripts/init_ducklake.py` to initialize the DuckLake catalog.
 5. Run `uv run python pipelines/usgs/pipeline.py` to ingest USGS data.
-6. Run `uv run dbt run --project-dir transformations --profiles-dir transformations` to build dbt models.
+6. Run `uv run dbt build --project-dir transformations --profiles-dir transformations` to build and test dbt models.
+
+### Run Dagster Locally
+
+Dagster orchestrates the same dlt ingestion and dbt transformation flow. Keep `scripts/start_cloud_sql_proxy.sh` running before launching Dagster because DuckLake metadata is stored in Cloud SQL.
+
+1. Start the Dagster UI and daemon with `DAGSTER_HOME=$PWD/storage/dagster_home uv run dagster dev`.
+2. Open the Dagster UI shown in the command output.
+3. Materialize the `usgs_pipeline_job` asset job to run `USGS API → dlt → DuckLake raw schemas → dbt build → DuckLake marts`.
+4. Enable the `daily_usgs_schedule` schedule to run the same job daily at 06:00 UTC.
+
+The local Dagster instance stores run metadata and logs under `storage/dagster_home/`. Generated runtime state is ignored by git; only the local `dagster.yaml` is committed.
 
 ### Monorepo Structure
 ```
@@ -53,6 +64,7 @@ oss-data-stack/
 │   ├── definitions.py     # Main Dagster definitions
 │   ├── assets/           # Data assets (dlt + dbt)
 │   ├── resources/        # Dagster resources
+│   ├── jobs/             # Asset jobs
 │   └── schedules/        # Job schedules
 ├── shared/              # Shared utilities
 └── config/              # Configuration files
