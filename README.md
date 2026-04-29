@@ -39,6 +39,22 @@ This project uses DuckLake as the persistent storage layer. DuckDB still execute
 5. Run `uv run python pipelines/usgs/pipeline.py` to ingest USGS data.
 6. Run `uv run dbt build --project-dir transformations --profiles-dir transformations` to build and test dbt models.
 
+### DuckDB CLI
+
+Keep `scripts/start_cloud_sql_proxy.sh` running, then start an interactive DuckDB CLI session attached to DuckLake:
+
+```bash
+bash scripts/duckdb_cli.sh
+```
+
+From inside the DuckDB prompt, run the sample queries:
+
+```sql
+.read scripts/duckdb_sample_queries.sql
+```
+
+The launcher loads `.env`, creates temporary DuckDB secrets, attaches the DuckLake catalog, and runs `USE` for the configured catalog. The secrets, `ATTACH`, and `USE` statements are session-scoped because the CLI uses an in-memory DuckDB session, so rerun `bash scripts/duckdb_cli.sh` whenever you open a new CLI session.
+
 ### Run Dagster Locally
 
 Dagster orchestrates the same dlt ingestion and dbt transformation flow. Keep `scripts/start_cloud_sql_proxy.sh` running before launching Dagster because DuckLake metadata is stored in Cloud SQL.
