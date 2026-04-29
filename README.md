@@ -1,11 +1,11 @@
 # Example OSS Data Stack
 
 ## Purpose
-Provides an example of an Open Source Data Stack - primarily as a way to try out new tools and technologies! As a result, we'll likely run everything locally and iterate quickly.
+Provides an example of an Open Source Data Stack - primarily as a way to try out new tools and technologies. DuckDB runs locally as the query engine while DuckLake persists metadata and data files in GCP.
 
 ## Architecture
 Overall data stack architecture:
-- **Data Lake**: DuckLake (using DuckDB for catalog db)
+- **Data Lake**: DuckLake (Cloud SQL PostgreSQL catalog + GCS object storage)
 - **Compute**: DuckDB
 - **Ingestion**: dlt
 - **Transformation**: dbt-core
@@ -17,10 +17,27 @@ Overall data stack architecture:
 
 ### Data Flow
 ```
-USGS API → dlt → DuckDB (raw) → dbt → DuckDB (marts)
-            ↑                              ↑
-            └──── Dagster orchestrates ────┘
+USGS API → dlt → DuckLake raw schemas → dbt → DuckLake marts
+            ↑                                  ↑
+            └──────── Dagster orchestrates ────┘
+
+DuckLake metadata: Cloud SQL PostgreSQL
+DuckLake data files: GCS Parquet objects
+DuckDB role: local/in-memory query engine
 ```
+
+## DuckLake on GCP
+
+This project uses DuckLake as the persistent storage layer. DuckDB still executes queries locally, but persistent catalog metadata is stored in Cloud SQL PostgreSQL and persistent table files are stored in GCS.
+
+### Setup
+
+1. Set `GCP_PROJECT_ID` in your shell.
+2. Run `WRITE_ENV_FILE=1 scripts/setup_gcp.sh` to provision the GCS bucket, service account, HMAC key, Cloud SQL instance, and `.env` file.
+3. Run `scripts/start_cloud_sql_proxy.sh` in a separate terminal before workloads that access DuckLake.
+4. Run `uv run python scripts/init_ducklake.py` to initialize the DuckLake catalog.
+5. Run `uv run python pipelines/usgs/pipeline.py` to ingest USGS data.
+6. Run `uv run dbt run --project-dir transformations --profiles-dir transformations` to build dbt models.
 
 ### Monorepo Structure
 ```
@@ -37,10 +54,6 @@ oss-data-stack/
 │   ├── assets/           # Data assets (dlt + dbt)
 │   ├── resources/        # Dagster resources
 │   └── schedules/        # Job schedules
-├── storage/              # Local data storage
-│   ├── lake/            # Raw data (dlt destination)
-│   ├── warehouse/       # Transformed data (dbt output)
-│   └── catalog.duckdb   # DuckDB database
 ├── shared/              # Shared utilities
 └── config/              # Configuration files
 ```

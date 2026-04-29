@@ -1,11 +1,11 @@
 # Project Overview
 
 ## Project Purpose
-Provides an example of an Open Source Data Stack - primarily as a way to try out new tools and technologies! As a result, we'll likely run everything locally and iterate quickly.
+Provides an example of an Open Source Data Stack - primarily as a way to try out new tools and technologies! DuckDB runs locally as the query engine while DuckLake stores persistent data in GCP.
 
 ## Overall Data Stack Architecture
 Overall data stack architecture:
-- **Data Lake**: DuckLake (using DuckDB for catalog db)
+- **Data Lake**: DuckLake (Cloud SQL PostgreSQL catalog + GCS object storage)
 - **Compute**: DuckDB
 - **Ingestion**: dlt
 - **Transformation**: dbt-core
@@ -17,9 +17,9 @@ Overall data stack architecture:
 
 ### Data Flow
 ```
-USGS API → dlt → DuckDB (raw) → dbt → DuckDB (marts)
-            ↑                              ↑
-            └──── Dagster orchestrates ────┘
+USGS API → dlt → DuckLake raw schemas → dbt → DuckLake marts
+            ↑                                  ↑
+            └──────── Dagster orchestrates ────┘
 ```
 
 ## Project Folder Structure
@@ -47,7 +47,7 @@ oss-data-stack/
 │
 ├── transformations/            # dbt project
 │   ├── dbt_project.yml         # dbt project config
-│   ├── profiles.yml            # dbt profiles (DuckDB connection)
+│   ├── profiles.yml            # dbt profiles (DuckLake attach via DuckDB)
 │   ├── models/                 # dbt models
 │   │   ├── staging/            # Staging models (raw → cleaned)
 │   │   │   └── usgs/
@@ -57,7 +57,7 @@ oss-data-stack/
 │   │   │
 │   │   └── marts/              # Business logic models
 │   │       └── water_metrics/
-│   │           └── water_levels_daily.sql
+│   │           └── fct_water_levels_daily.sql
 │   │
 │   ├── macros/                 # Reusable SQL macros
 │   ├── tests/                  # dbt data tests
@@ -83,13 +83,6 @@ oss-data-stack/
 │   │
 │   └── jobs/                   # Dagster jobs (optional)
 │
-├── storage/                    # Local data storage
-│   ├── lake/                   # DuckLake/raw data storage (dlt destination)
-│   │   └── .gitkeep
-│   ├── warehouse/              # Transformed data (dbt output)
-│   │   └── .gitkeep
-│   └── catalog.duckdb          # DuckDB database file
-│
 ├── shared/                     # Shared utilities across layers
 │   ├── __init__.py
 │   ├── config.py              # Global configuration
@@ -100,8 +93,9 @@ oss-data-stack/
 │   └── orchestration/
 │
 ├── scripts/                   # Development/ops scripts
-│   ├── setup.sh              # Initial setup script
-│   └── dev_utils.py          # Dev utilities
+│   ├── setup_gcp.sh          # GCP DuckLake infrastructure setup
+│   ├── start_cloud_sql_proxy.sh
+│   └── init_ducklake.py      # DuckLake catalog initialization
 │
 └── config/                   # Configuration files
     ├── dlt/                 # dlt configs
