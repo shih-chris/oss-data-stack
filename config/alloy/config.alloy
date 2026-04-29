@@ -1,0 +1,35 @@
+local.file_match "dagster" {
+  path_targets = [{
+    "__path__" = "/var/log/dagster/*.log",
+    "job" = "dagster",
+    "service" = env("K_SERVICE"),
+    "revision" = env("K_REVISION"),
+    "project_id" = env("GCP_PROJECT_ID"),
+  }]
+}
+
+loki.source.file "dagster" {
+  targets = local.file_match.dagster.targets
+  forward_to = [loki.process.dagster.receiver]
+}
+
+loki.process "dagster" {
+  stage.static_labels {
+    values = {
+      stack = "oss-data-stack",
+    }
+  }
+
+  forward_to = [loki.write.grafana_cloud.receiver]
+}
+
+loki.write "grafana_cloud" {
+  endpoint {
+    url = env("LOKI_URL")
+
+    basic_auth {
+      username = env("LOKI_USER")
+      password = env("LOKI_API_KEY")
+    }
+  }
+}

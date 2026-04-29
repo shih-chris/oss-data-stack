@@ -1,0 +1,19 @@
+storage:
+  postgres:
+    postgres_url:
+      env: DAGSTER_POSTGRES_URL
+
+run_launcher:
+  module: dagster
+  class: DefaultRunLauncher
+
+scheduler:
+  module: dagster._core.scheduler
+  class: DagsterDaemonScheduler
+
+compute_logs:
+  module: dagster._core.storage.noop_compute_log_manager
+  class: NoOpComputeLogManager
+
+telemetry:
+  enabled: false
