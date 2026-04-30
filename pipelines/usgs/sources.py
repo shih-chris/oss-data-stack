@@ -36,11 +36,7 @@ def water_levels(config: USGSConfig) -> Iterator[Dict[str, Any]]:
     Yields:
         Normalized water level records
     """
-    params = {
-        "sites": ",".join(config.site_codes),
-        "parameterCd": ",".join(config.parameter_codes),
-        "format": config.format,
-    }
+    params = _build_request_params(config)
 
     response = requests.get(config.base_url, params=params, timeout=30)
     response.raise_for_status()
@@ -77,3 +73,20 @@ def water_levels(config: USGSConfig) -> Iterator[Dict[str, Any]]:
                 "unit": unit,
                 "qualifiers": value_record.get("qualifiers", []),
             }
+
+
+def _build_request_params(config: USGSConfig) -> Dict[str, str]:
+    """Build USGS API query parameters from the pipeline config."""
+    params = {
+        "sites": ",".join(config.site_codes),
+        "parameterCd": ",".join(config.parameter_codes),
+        "format": config.format,
+    }
+
+    if config.start_dt and config.end_dt:
+        params["startDT"] = config.start_dt
+        params["endDT"] = config.end_dt
+    elif config.history_period:
+        params["period"] = config.history_period
+
+    return params
