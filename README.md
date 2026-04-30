@@ -36,7 +36,7 @@ This project uses DuckLake as the persistent storage layer. DuckDB still execute
 2. Run `WRITE_ENV_FILE=1 scripts/setup_gcp.sh` to provision the GCS bucket, service account, HMAC key, Cloud SQL instance, and `.env` file.
 3. Run `scripts/start_cloud_sql_proxy.sh` in a separate terminal before workloads that access DuckLake.
 4. Run `uv run python scripts/init_ducklake.py` to initialize the DuckLake catalog.
-5. Run `uv run python pipelines/usgs/pipeline.py` to ingest USGS data.
+5. Run `uv run python pipelines/usgs/pipeline.py` to ingest USGS data (defaults to a rolling 7-day history window).
 6. Run `uv run dbt build --project-dir transformations --profiles-dir transformations` to build and test dbt models.
 
 ### DuckDB CLI
@@ -63,6 +63,25 @@ Dagster orchestrates the same dlt ingestion and dbt transformation flow. Keep `s
 2. Open the Dagster UI shown in the command output.
 3. Materialize the `usgs_pipeline_job` asset job to run `USGS API → dlt → DuckLake raw schemas → dbt build → DuckLake marts`.
 4. Enable the `daily_usgs_schedule` schedule to run the same job every 15 minutes.
+
+To run a bigger historical pull from Dagster Launchpad, pass config for the `usgs_water_services` asset:
+
+```yaml
+ops:
+  usgs_water_services:
+    config:
+      history_period: P90D
+```
+
+Or use an explicit date range:
+
+```yaml
+ops:
+  usgs_water_services:
+    config:
+      start_dt: "2025-01-01T00:00:00Z"
+      end_dt: "2025-03-31T23:59:59Z"
+```
 
 The local Dagster instance stores run metadata and logs under `storage/dagster_home/`. Generated runtime state is ignored by git; only the local `dagster.yaml` is committed.
 

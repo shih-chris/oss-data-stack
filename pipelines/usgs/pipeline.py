@@ -57,6 +57,9 @@ def build_usgs_pipeline(
 def run_usgs_pipeline(
     site_codes: list[str] = None,
     parameter_codes: list[str] = None,
+    history_period: str = "P7D",
+    start_dt: str = None,
+    end_dt: str = None,
     destination: str = "ducklake",
     dataset_name: str = USGS_DATASET_NAME,
 ) -> dlt.Pipeline:
@@ -66,6 +69,9 @@ def run_usgs_pipeline(
     Args:
         site_codes: List of USGS site codes to fetch data for
         parameter_codes: List of parameter codes (e.g., "00065" for gage height)
+        history_period: ISO-8601 duration window (e.g., "P7D")
+        start_dt: Optional explicit start datetime for historical backfill
+        end_dt: Optional explicit end datetime for historical backfill
         destination: dlt destination (default: "ducklake")
         dataset_name: Name of the dataset/schema in the destination
 
@@ -76,6 +82,9 @@ def run_usgs_pipeline(
     config = USGSConfig(
         site_codes=site_codes,
         parameter_codes=parameter_codes,
+        history_period=history_period,
+        start_dt=start_dt,
+        end_dt=end_dt,
     )
 
     pipeline = build_usgs_pipeline(destination=destination, dataset_name=dataset_name)

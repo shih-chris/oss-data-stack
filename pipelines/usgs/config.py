@@ -1,7 +1,7 @@
 """Configuration for USGS Water Services pipeline."""
 
 from dataclasses import dataclass
-from typing import List
+from typing import List, Optional
 
 
 @dataclass
@@ -12,6 +12,9 @@ class USGSConfig:
     site_codes: List[str] = None
     parameter_codes: List[str] = None
     format: str = "json"
+    history_period: Optional[str] = "P7D"
+    start_dt: Optional[str] = None
+    end_dt: Optional[str] = None
 
     def __post_init__(self):
         """Set default values."""
@@ -21,6 +24,8 @@ class USGSConfig:
         if self.parameter_codes is None:
             # Default to gage height (water level)
             self.parameter_codes = ["00065"]
+        if bool(self.start_dt) != bool(self.end_dt):
+            raise ValueError("start_dt and end_dt must both be set together")
 
 
 # Mapping of USGS parameter codes to readable names
