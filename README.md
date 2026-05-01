@@ -89,7 +89,7 @@ The local Dagster instance stores run metadata and logs under `storage/dagster_h
 
 Default USGS station selection lives in `pipelines/deployment_configs/usgs_stations.yml`. The file has top-level defaults for `parameter_codes` and `history_period`, plus per-station entries with `site_code`, river, and location metadata. Stations inherit the top-level `parameter_codes` unless a station defines its own override.
 
-The ingestion pipeline queries each station independently. If one station request fails, the failed station is skipped and the remaining stations continue loading. Raw USGS loads use merge semantics keyed by `site_code`, `parameter_code`, and `timestamp`, and the staging model also deduplicates by the same natural key before marts are built.
+The ingestion pipeline queries each station independently. If one station request fails, the failed station is skipped and the remaining stations continue loading. Raw USGS loads append records, and the staging model deduplicates by the natural key of `site_code`, `parameter_code`, and `timestamp` before marts are built.
 
 ### Deploy Dagster to Cloud Run
 
