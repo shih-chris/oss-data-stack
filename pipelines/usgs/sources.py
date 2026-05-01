@@ -28,10 +28,7 @@ def usgs_water_data(config: USGSConfig = None) -> Iterator[dlt.resource]:
     yield water_levels(config=config)
 
 
-@dlt.resource(
-    write_disposition="merge",
-    primary_key=["site_code", "parameter_code", "timestamp"],
-)
+@dlt.resource(write_disposition="append")
 def water_levels(config: USGSConfig) -> Iterator[Dict[str, Any]]:
     """
     Resource for fetching water level data from USGS.
