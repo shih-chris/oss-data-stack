@@ -8,6 +8,15 @@ with source as (
     select * from {{ source('usgs_water_raw', 'water_levels') }}
 ),
 
+deduplicated as (
+    select *
+    from source
+    qualify row_number() over (
+        partition by site_code, parameter_code, timestamp
+        order by _dlt_load_id desc, _dlt_id desc
+    ) = 1
+),
+
 renamed as (
     select
         -- Identifiers
@@ -29,7 +38,7 @@ renamed as (
         _dlt_load_id as dlt_load_id,
         _dlt_id as dlt_id
 
-    from source
+    from deduplicated
 )
 
 select * from renamed
