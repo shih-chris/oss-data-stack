@@ -12,6 +12,9 @@ def test_default_config_uses_period_window() -> None:
     params = _build_request_params(config)
 
     assert params["period"] == "P7D"
+    assert "03076500" in params["sites"]
+    assert "01200500" in params["sites"]
+    assert params["parameterCd"] == "00065,00060,00010"
     assert "startDT" not in params
     assert "endDT" not in params
 

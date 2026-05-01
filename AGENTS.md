@@ -34,6 +34,9 @@ oss-data-stack/
 │
 ├── pipelines/                  # dlt ingestion pipelines
 │   ├── __init__.py
+│   ├── deployment_configs/     # Deployment-specific data source selections
+│   │   └── usgs_stations.yml   # USGS stations, defaults, and overrides
+│   │
 │   ├── usgs/                   # USGS Water Services pipeline
 │   │   ├── __init__.py
 │   │   ├── pipeline.py         # Main dlt pipeline definition
