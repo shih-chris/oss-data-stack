@@ -29,7 +29,7 @@ class UsgsDagsterConfig(Config):
 
     site_codes: list[str] | None = None
     parameter_codes: list[str] | None = None
-    history_period: str = "P7D"
+    history_period: str | None = None
     start_dt: str | None = None
     end_dt: str | None = None
 

@@ -36,7 +36,7 @@ This project uses DuckLake as the persistent storage layer. DuckDB still execute
 2. Run `WRITE_ENV_FILE=1 scripts/setup_gcp.sh` to provision the GCS bucket, service account, HMAC key, Cloud SQL instance, and `.env` file.
 3. Run `scripts/start_cloud_sql_proxy.sh` in a separate terminal before workloads that access DuckLake.
 4. Run `uv run python scripts/init_ducklake.py` to initialize the DuckLake catalog.
-5. Run `uv run python pipelines/usgs/pipeline.py` to ingest USGS data (defaults to a rolling 7-day history window).
+5. Run `uv run python pipelines/usgs/pipeline.py` to ingest USGS data (defaults to the stations and rolling history window in `pipelines/deployment_configs/usgs_stations.yml`).
 6. Run `uv run dbt build --project-dir transformations --profiles-dir transformations` to build and test dbt models.
 
 ### DuckDB CLI
@@ -84,6 +84,12 @@ ops:
 ```
 
 The local Dagster instance stores run metadata and logs under `storage/dagster_home/`. Generated runtime state is ignored by git; only the local `dagster.yaml` is committed.
+
+### USGS Station Config
+
+Default USGS station selection lives in `pipelines/deployment_configs/usgs_stations.yml`. The file has top-level defaults for `parameter_codes` and `history_period`, plus per-station entries with `site_code`, river, and location metadata. Stations inherit the top-level `parameter_codes` unless a station defines its own override.
+
+The ingestion pipeline queries each station independently. If one station request fails, the failed station is skipped and the remaining stations continue loading. Raw USGS loads use merge semantics keyed by `site_code`, `parameter_code`, and `timestamp`, and the staging model also deduplicates by the same natural key before marts are built.
 
 ### Deploy Dagster to Cloud Run
 
@@ -144,6 +150,7 @@ Set `DAGSTER_WEBSERVER_ALLOW_UNAUTHENTICATED=1` before deployment only if you wa
 ```
 oss-data-stack/
 ├── pipelines/              # dlt ingestion pipelines
+│   ├── deployment_configs/ # Deployment-specific station/config selections
 │   └── usgs/              # USGS Water Services pipeline
 ├── transformations/        # dbt project
 │   ├── models/
