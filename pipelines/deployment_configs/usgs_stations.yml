@@ -1,0 +1,57 @@
+defaults:
+  parameter_codes:
+    - "00065" # gage_height_ft
+    - "00060" # discharge_cfs
+    - "00010" # water_temp_c
+  history_period: "P7D"
+
+stations:
+  - site_code: "03076500"
+    name: "Youghiogheny River at Friendsville, MD"
+    river: "Youghiogheny River"
+    location: "Friendsville, MD"
+
+  - site_code: "01200500"
+    name: "Housatonic River at Gaylordsville, CT"
+    river: "Housatonic River"
+    location: "Gaylordsville, CT"
+
+  - site_code: "01439500"
+    name: "Bush Kill at Shoemakers, PA"
+    river: "Bush Kill"
+    location: "Shoemakers, PA"
+
+  - site_code: "01189995"
+    name: "Farmington River at Tariffville, CT"
+    river: "Farmington River"
+    location: "Tariffville, CT"
+
+  - site_code: "01463500"
+    name: "Delaware River at Trenton, NJ"
+    river: "Delaware River"
+    location: "Trenton, NJ"
+
+  - site_code: "04260500"
+    name: "Black River at Watertown, NY"
+    river: "Black River"
+    location: "Watertown, NY"
+
+  - site_code: "01440400"
+    name: "Brodhead Creek near Analomink, PA"
+    river: "Brodhead Creek"
+    location: "Analomink, PA"
+
+  - site_code: "01433500"
+    name: "Mongaup River near Mongaup, NY"
+    river: "Mongaup River"
+    location: "Mongaup, NY"
+
+  - site_code: "01459500"
+    name: "Tohickon Creek near Pipersville, PA"
+    river: "Tohickon Creek"
+    location: "Pipersville, PA"
+
+  - site_code: "01399500"
+    name: "Lamington River near Pottersville, NJ"
+    river: "Lamington River"
+    location: "Pottersville, NJ"
