@@ -57,7 +57,7 @@ def build_usgs_pipeline(
 def run_usgs_pipeline(
     site_codes: list[str] = None,
     parameter_codes: list[str] = None,
-    history_period: str = "P7D",
+    history_period: str = None,
     start_dt: str = None,
     end_dt: str = None,
     destination: str = "ducklake",
